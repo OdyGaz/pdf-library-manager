@@ -1,0 +1,46 @@
+/* Neumorphic Design με χρωματική παλέτα */
+body {
+    background-color: #EAEAEA;
+    color: #26282B;
+}
+
+/* Neumorphic Card */
+.neumorphic-card {
+    background: #EAEAEA;
+    box-shadow: 12px 12px 24px #bebebe, 
+                -12px -12px 24px #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Neumorphic Input */
+.neumorphic-input {
+    background: #EAEAEA;
+    box-shadow: inset 6px 6px 12px #bebebe, 
+                inset -6px -6px 12px #ffffff;
+    border: none;
+    color: #26282B;
+    transition: all 0.3s ease;
+}
+
+.neumorphic-input:focus {
+    box-shadow: inset 3px 3px 6px #bebebe, 
+                inset -3px -3px 6px #ffffff;
+}
+
+/* Accent Button (#FF555D) */
+.accent-btn {
+    background: #FF555D;
+    box-shadow: 6px 6px 12px rgba(255, 85, 93, 0.3), 
+                -6px -6px 12px #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.accent-btn:hover {
+    background: #e04b52;
+    box-shadow: 3px 3px 6px rgba(255, 85, 93, 0.4), 
+                -3px -3px 6px #ffffff;
+}
+
+.accent-btn:active {
+    box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.2);
+}

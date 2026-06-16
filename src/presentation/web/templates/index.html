@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Library Organizer</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        neumorphic_bg: '#EAEAEA',
+                        neumorphic_dark: '#26282B',
+                        accent: '#FF555D',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-[#EAEAEA] text-[#26282B] min-h-screen font-sans p-6">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl font-extrabold tracking-tight mb-2 text-[#26282B]">Ψηφιακή Βιβλιοθήκη PDF</h1>
+            <p class="text-gray-600">Αυτόματη οργάνωση και προβολή εξωφύλλων</p>
+        </header>
+
+        <!-- Import Form -->
+        <section class="neumorphic-card p-6 mb-10 rounded-2xl max-w-2xl mx-auto">
+            <h2 class="text-xl font-bold mb-4">Εισαγωγή Νέων PDF</h2>
+            <form action="/import" method="POST" class="flex flex-col gap-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-2" for="directory">
+                        Επιλογή Φακέλου:
+                    </label>
+                    <div class="flex gap-3">
+                        <input 
+                            type="text" 
+                            id="directory" 
+                            name="directory" 
+                            placeholder="Κάντε κλικ στο Browse για επιλογή φακέλου..." 
+                            required 
+                            class="neumorphic-input flex-grow p-3 rounded-xl focus:outline-none"
+                        >
+                        <button 
+                            type="button" 
+                            onclick="browseFolder()" 
+                            class="neumorphic-card px-5 py-3 rounded-xl font-bold hover:bg-gray-200 transition-all text-sm"
+                        >
+                            Browse...
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="accent-btn py-3 px-6 rounded-xl font-bold text-white transition-all self-end">
+                    Σάρωση και Εισαγωγή
+                </button>
+            </form>
+        </section>
+
+        <!-- Notifications -->
+        {% if request.query_params.get('success') %}
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-8 rounded-r-xl shadow-sm max-w-2xl mx-auto" role="alert">
+                <p class="font-bold">Επιτυχία!</p>
+                {% if request.query_params.get('msg') %}
+                    <p>{{ request.query_params.get('msg') }}</p>
+                {% elif request.query_params.get('imported') %}
+                    <p>Εισήχθησαν επιτυχώς {{ request.query_params.get('imported') }} νέα βιβλία στη βιβλιοθήκη.</p>
+                {% else %}
+                    <p>Η ενέργεια ολοκληρώθηκε με επιτυχία.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+        {% if request.query_params.get('error') %}
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-8 rounded-r-xl shadow-sm max-w-2xl mx-auto" role="alert">
+                <p class="font-bold">Σφάλμα</p>
+                <p>{{ request.query_params.get('error') }}</p>
+            </div>
+        {% endif %}
+
+        <!-- Books Grid Header with Clear Button -->
+        <main>
+            <div class="flex justify-between items-center mb-6 border-b pb-2 border-gray-300">
+                <h2 class="text-2xl font-bold">Τα Βιβλία μου ({{ books|length }})</h2>
+                {% if books|length > 0 %}
+                    <form action="/library/clear" method="POST" onsubmit="return confirm('ΠΡΟΣΟΧΗ: Είστε σίγουροι ότι θέλετε να αδειάσετε ολόκληρη τη βιβλιοθήκη; (Τα πραγματικά PDF αρχεία σας ΔΕΝ θα διαγραφούν).');">
+                        <button type="submit" class="text-xs font-bold bg-[#FF555D] text-white px-4 py-2 rounded-xl hover:bg-red-600 transition-all shadow-sm">
+                            Καθαρισμός Βιβλιοθήκης
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+            
+            {% if books|length == 0 %}
+                <div class="text-center py-12 text-gray-500">
+                    <p class="text-lg">Δεν υπάρχουν ακόμη βιβλία στη βιβλιοθήκη σας.</p>
+                    <p class="text-sm">Επιλέξτε έναν φάκελο παραπάνω για να ξεκινήσετε.</p>
+                </div>
+            {% else %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                    {% for book in books %}
+                        <div class="neumorphic-card p-4 rounded-2xl flex flex-col justify-between transition-transform duration-300 hover:scale-105">
+                            <!-- Κλικ στο εξώφυλλο για άνοιγμα με την default εφαρμογή -->
+                            <div onclick="openLocalPdf({{ book.id }})" class="w-full h-64 bg-[#dfdfdf] rounded-xl mb-4 overflow-hidden relative shadow-inner cursor-pointer" title="Κάντε κλικ για άνοιγμα στα Windows">
+                                {% if book.thumbnail_path %}
+                                    <img src="{{ book.thumbnail_path }}" alt="{{ book.title }}" class="w-full h-full object-cover">
+                                {% else %}
+                                    <span class="text-gray-400 text-xs text-center p-2 flex items-center justify-center h-full">Δεν είναι διαθέσιμο εξώφυλλο</span>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-sm line-clamp-2 text-[#26282B] mb-2 cursor-pointer" onclick="openLocalPdf({{ book.id }})" title="{{ book.title }}">
+                                    {{ book.title }}
+                                </h3>
+                                <div class="flex justify-between items-center text-xs text-gray-500 mb-4">
+                                    <span>{{ book.file_size_mb }} MB</span>
+                                    <span class="truncate max-w-[120px] text-right" title="{{ book.file_path }}">{{ book.file_path }}</span>
+                                </div>
+                                
+                                <!-- Διπλά Κουμπιά Διαγραφής/Αφαίρεσης -->
+                                <div class="flex justify-between items-center border-t pt-2 border-gray-200 gap-2">
+                                    <form action="/books/{{ book.id }}/delete" method="POST" onsubmit="return confirm('Θέλετε να αφαιρέσετε αυτό το PDF από τη βιβλιοθήκη; Το αρχείο θα παραμείνει στο PC σας.');">
+                                        <input type="hidden" name="delete_physical" value="false">
+                                        <button type="submit" class="text-xs font-bold text-gray-500 hover:text-gray-700 transition-all">
+                                            Αφαίρεση
+                                        </button>
+                                    </form>
+                                    <form action="/books/{{ book.id }}/delete" method="POST" onsubmit="return confirm('ΠΡΟΣΟΧΗ: Θέλετε να στείλετε το αρχείο PDF στον Κάδο Ανακύκλωσης του υπολογιστή σας;');">
+                                        <input type="hidden" name="delete_physical" value="true">
+                                        <button type="submit" class="text-xs font-bold text-[#FF555D] hover:underline transition-all">
+                                            Διαγραφή (Κάδος)
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        async function browseFolder() {
+            try {
+                const response = await fetch('/api/browse-folder');
+                const data = await response.json();
+                if (data.path) {
+                    document.getElementById('directory').value = data.path;
+                }
+            } catch (err) {
+                console.error("Σφάλμα κατά την επιλογή φακέλου:", err);
+                alert("Αποτυχία ανοίγματος του folder browser.");
+            }
+        }
+
+        async function openLocalPdf(bookId) {
+            try {
+                const response = await fetch(`/books/${bookId}/open-local`, { method: 'POST' });
+                const data = await response.json();
+                if (data.status === 'error') {
+                    alert("Σφάλμα κατά το άνοιγμα: " + data.message);
+                }
+            } catch (err) {
+                console.error("Σφάλμα δικτύου:", err);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# Python bytecode (προσωρινά αρχεία Python)
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Εικονικό περιβάλλον (Virtual Environments)
+.venv/
+venv/
+env/
+
+# Δεδομένα της εφαρμογής (ΔΕΝ πρέπει να ανέβουν στο GitHub)
+data/library.db
+data/thumbnails/*
+
+# Ρυθμίσεις IDE (VS Code, PyCharm κ.λπ.)
+.vscode/
+.idea/
