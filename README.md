@@ -79,39 +79,3 @@ pdf-library-manager/
 * **PDF Processing:** [PyMuPDF (fitz)](https://pymupdf.readthedocs.io/) (Εξαιρετικά γρήγορη εξαγωγή εξωφύλλων)
 * **File Recycling:** [Send2Trash](https://github.com/arsenetar/send2trash) (Ασφαλής μεταφορά αρχείων στον Κάδο Ανακύκλωσης των Windows)
 * **Frontend:** HTML5, CSS3 (Custom Neumorphic Shadows), Tailwind CSS (Layout/Grid), Jinja2 Templates
-
----
-
-## 🚀 Οδηγίες Εγκατάστασης & Εκτέλεσης
-
-### Προαπαιτούμενα
-* Python 3.10 ή νεότερη εγκατεστημένη στον υπολογιστή σας.
-
-### 1. Λήψη του Project
-Αντιγράψτε το repository τοπικά:
-```bash
-git clone https://github.com/ΤΟ_USERNAME_ΣΑΣ/pdf-library-manager.git
-cd pdf-library-manager
-```
-
-### 2. Εγκατάσταση Εξαρτήσεων
-Εγκαταστήστε τις απαραίτητες βιβλιοθήκες χρησιμοποιώντας το αρχείο `requirements.txt`:
-```bash
-pip install -r requirements.txt
-```
-*(Εναλλακτικά, αν χρησιμοποιείτε Poetry, εκτελέστε `poetry install` και `poetry shell`)*
-
-### 3. Εκκίνηση της Εφαρμογής
-Εκτελέστε την εφαρμογή ως Python module από τη ρίζα του project:
-```bash
-python -m src.main
-```
-
-### 4. Πλοήγηση
-Ανοίξτε τον browser σας και μεταβείτε στη διεύθυνση:
-👉 **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
-
----
-
-## 🔒 Σημείωση Ασφαλείας
-Η εφαρμογή εκτελείται **αποκλειστικά τοπικά** στον υπολογιστή σας. Η βάση δεδομένων `library.db` και οι εικόνες εξωφύλλων αποθηκεύονται τοπικά στον φάκελο `data/` και προστατεύονται από το αρχείο `.gitignore`, διασφαλίζοντας ότι κανένα προσωπικό σας αρχείο ή διαδρομή συστήματος (path) δεν θα ανέβει στο GitHub.
